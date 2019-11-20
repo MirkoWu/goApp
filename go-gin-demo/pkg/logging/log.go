@@ -13,11 +13,11 @@ type Level int
 var (
 	F *os.File
 
-	DefaultPrefix = ""
+	DefaultPrefix      = ""
 	DefaultCallerDepth = 2
 
-	logger *log.Logger
-	logPrefix = ""
+	logger     *log.Logger
+	logPrefix  = ""
 	levelFlags = []string{"DEBUG", "INFO", "WARN", "ERROR", "FATAL"}
 )
 
@@ -44,6 +44,7 @@ func Debug(v ...interface{}) {
 func Info(v ...interface{}) {
 	setPrefix(INFO)
 	logger.Println(v)
+	fmt.Println(v)
 }
 
 func Warn(v ...interface{}) {

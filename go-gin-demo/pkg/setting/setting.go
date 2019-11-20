@@ -21,4 +21,16 @@ var (
 	DB_HOST         = "数据库IP:数据库端口号"
 	DB_NAME         = "blog"
 	DB_TABLE_PREFIX = "blog_"
+
+	//logging
+	RuntimeRootPath = "runtime/"
+	LogSavePath     = "logs/"
+	LogSaveName     = "log"
+	LogFileExt      = "log"
+	TimeFormat      = 20060102
+	//image
+	ImagePrefixUrl = "http://127.0.0.1:8000"
+	ImageSavePath  = "upload/images/"
+	ImageMaxSize   = 5
+	ImageAllowExts = " .jpg,.jpeg,.png"
 )

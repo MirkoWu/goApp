@@ -4,31 +4,30 @@ import (
 	"fmt"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"github.com/mirkowu/go-gin-demo/pkg/logging"
 	"github.com/mirkowu/go-gin-demo/pkg/setting"
-	"log"
 )
 
 var db *gorm.DB
 
 type Model struct {
-	ID int `gorm:"primary_key" json:"id"`
-	CreatedOn int `json:"created_on"`
+	ID         int `gorm:"primary_key" json:"id"`
+	CreatedOn  int `json:"created_on"`
 	ModifiedOn int `json:"modified_on"`
 }
 
 func init() {
 	var (
-		err error
+		err                                               error
 		dbType, dbName, user, password, host, tablePrefix string
 	)
-
 
 	dbType = setting.DB_TYPE
 	dbName = setting.DB_NAME
 	user = setting.DB_USER
 	password = setting.DB_PASSWORD
 	host = setting.DB_HOST
-	tablePrefix =setting.DB_TABLE_PREFIX
+	tablePrefix = setting.DB_TABLE_PREFIX
 
 	db, err = gorm.Open(dbType, fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local",
 		user,
@@ -37,11 +36,11 @@ func init() {
 		dbName))
 
 	if err != nil {
-		log.Println(err)
+		logging.Error(err)
 	}
 
-	gorm.DefaultTableNameHandler = func (db *gorm.DB, defaultTableName string) string  {
-		return tablePrefix + defaultTableName;
+	gorm.DefaultTableNameHandler = func(db *gorm.DB, defaultTableName string) string {
+		return tablePrefix + defaultTableName
 	}
 
 	db.SingularTable(true)
