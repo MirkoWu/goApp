@@ -1,4 +1,5 @@
 package routers
+
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/mirkowu/go-gin-demo/middleware/jwt"
@@ -21,8 +22,9 @@ func InitRouter() *gin.Engine {
 	//		"message": "test",
 	//	})
 	//})
-	r.GET("/auth", api.GetAuth)
 
+	//验证
+	r.GET("/auth", api.GetAuth)
 
 	apiv1 := r.Group("/api/v1")
 	apiv1.Use(jwt.JWT())
@@ -35,6 +37,23 @@ func InitRouter() *gin.Engine {
 		apiv1.PUT("/tags/:id", v1.EditTag)
 		//删除指定标签
 		apiv1.DELETE("/tags/:id", v1.DeleteTag)
+
+		//上传多张图片
+		apiv1.POST("/upload_files", v1.UploadFiles)
+
+		//注册
+		apiv1.POST("/register", v1.Register)
+		//登录
+		apiv1.POST("/login", v1.Login)
+		//获取验证码
+		apiv1.POST("/get_captcha", v1.GetCaptcha)
+
+		//更新密码
+		apiv1.POST("/update_password", v1.UpdatePassword)
+		//更新用户信息
+		apiv1.POST("/update_user_info", v1.UpdateUserInfo)
+		//更新头像
+		apiv1.POST("/update_avatar", v1.UpdateAvatar)
 	}
 
 	return r

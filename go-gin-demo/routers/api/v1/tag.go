@@ -34,7 +34,7 @@ func GetTags(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"code": code,
 		"msg":  e.GetMsg(code),
-		"date": data,
+		"data": data,
 	})
 }
 
@@ -46,9 +46,9 @@ func AddTag(c *gin.Context) {
 	valid := validation.Validation{}
 	valid.Required(name, "name").Message("名称不能为空")
 	valid.MaxSize(name, 100, "name").Message("名称最长为100字符")
-	valid.Required(createdBy, "name").Message("创建人不能为空")
-	valid.MaxSize(name, 100, "name").Message("创建人最长为100字符")
-	valid.Range(state, 0, 1, "name").Message("状态只允许0或1")
+	valid.Required(createdBy, "created_by").Message("创建人不能为空")
+	valid.MaxSize(createdBy, 100, "created_by").Message("创建人最长为100字符")
+	valid.Range(state, 0, 1, "state").Message("状态只允许0或1")
 
 	code := e.INVALID_PARAMS
 	if !valid.HasErrors() {
@@ -102,15 +102,15 @@ func EditTag(c *gin.Context) {
 				data["state"] = state
 			}
 			models.EditTag(id, data)
-		}else {
-			code=e.ERROR_NOT_EXIST_TAG
+		} else {
+			code = e.ERROR_NOT_EXIST_TAG
 		}
 	}
 
-	c.JSON(http.StatusOK,gin.H{
-		"code":code,
-		"msg":e.GetMsg(code),
-		"data":nil,
+	c.JSON(http.StatusOK, gin.H{
+		"code": code,
+		"msg":  e.GetMsg(code),
+		"data": nil,
 	})
 }
 
@@ -122,7 +122,7 @@ func DeleteTag(c *gin.Context) {
 	valid.Min(id, 1, "id").Message("ID必须大于0")
 
 	code := e.INVALID_PARAMS
-	if ! valid.HasErrors() {
+	if !valid.HasErrors() {
 		code = e.SUCCESS
 		if models.ExistTagByID(id) {
 			models.DeleteTag(id)
@@ -132,8 +132,8 @@ func DeleteTag(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"code" : code,
-		"msg" : e.GetMsg(code),
-		"data" : make(map[string]string),
+		"code": code,
+		"msg":  e.GetMsg(code),
+		"data": make(map[string]string),
 	})
 }

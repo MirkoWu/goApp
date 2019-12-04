@@ -15,12 +15,12 @@ var (
 	JwtSecret string = "23347$040412"
 
 	DB_TYPE     string = "mysql"
-	DB_USER            = "数据库账号"
-	DB_PASSWORD        = "数据库密码"
+	DB_USER            = "root"
+	DB_PASSWORD        = "root"
 	//127.0.0.1:3306
-	DB_HOST         = "数据库IP:数据库端口号"
-	DB_NAME         = "blog"
-	DB_TABLE_PREFIX = "blog_"
+	DB_HOST         = "127.0.0.1:3306"
+	DB_NAME         = "user"
+	DB_TABLE_PREFIX = ""
 
 	//logging
 	RuntimeRootPath = "runtime/"
