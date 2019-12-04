@@ -84,6 +84,7 @@ func Login(c *gin.Context) {
 			user := models.GetUserByEmail(email)
 			if password == user.Password {
 				data = user
+				code = e.SUCCESS
 			} else {
 				code = e.ERROR_PASSWORD
 			}

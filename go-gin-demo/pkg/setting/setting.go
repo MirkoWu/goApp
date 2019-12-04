@@ -19,7 +19,7 @@ var (
 	DB_PASSWORD        = "root"
 	//127.0.0.1:3306
 	DB_HOST         = "127.0.0.1:3306"
-	DB_NAME         = "user"
+	DB_NAME         = "test" //这个是数据库名 不是表名
 	DB_TABLE_PREFIX = ""
 
 	//logging

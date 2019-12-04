@@ -1,11 +1,14 @@
 package models
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 type User struct {
 	UserId        int64  `json:"user_id"`
 	Email         string `json:"email"`
-	Password      string `json:"-"`
+	Password      string `json:"password"`
 	Nickname      string `json:"nickname"`
 	Avatar        string `json:"avatar"`
 	Age           int    `json:"age"`
@@ -20,7 +23,8 @@ func GetUserByID(userId int64) (user User) {
 }
 
 func GetUserByEmail(email string) (user User) {
-	db.Select("user").Where("email = ?", email).First(&user)
+	db.Where("email = ?", email).First(&user)
+	fmt.Println(user.Password)
 	return
 }
 
