@@ -7,6 +7,7 @@ import (
 	"github.com/mirkowu/go-gin-demo/pkg/util"
 	"github.com/unknwon/com"
 	"net/http"
+	"time"
 )
 
 const (
@@ -22,7 +23,6 @@ func GetCaptcha(c *gin.Context) {
 	var data string
 	code := e.ERROR_EMAIL
 	if util.CheckEmail(email) {
-
 		if captchaType == TypeCaptchaRegister {
 			if models.ExistUserByEmail(email) {
 				code = e.ERROR_EXIST_EMAIL
@@ -37,6 +37,8 @@ func GetCaptcha(c *gin.Context) {
 				code = e.SUCCESS
 				data = "123456"
 			}
+		} else {
+			code = e.INVALID_PARAMS
 		}
 	}
 
@@ -59,9 +61,13 @@ func Register(c *gin.Context) {
 			code = e.ERROR_EXIST_EMAIL
 		} else {
 			models.AddUser(email, password)
-			code = e.SUCCESS
+
 			user := models.GetUserByEmail(email)
+			user.Token, _ = util.GenerateToken(user.UserId) //token
+			models.UpdateUser(user.UserId, user)            //更新
+
 			data = user
+			code = e.SUCCESS
 		}
 	}
 
@@ -83,6 +89,10 @@ func Login(c *gin.Context) {
 		if models.ExistUserByEmail(email) {
 			user := models.GetUserByEmail(email)
 			if password == user.Password {
+				user.LastLoginTime = time.Now().Unix()
+				user.Token, _ = util.GenerateToken(user.UserId) //token
+				models.UpdateUser(user.UserId, user)            //更新
+
 				data = user
 				code = e.SUCCESS
 			} else {

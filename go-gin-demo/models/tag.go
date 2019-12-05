@@ -64,10 +64,10 @@ func AddTag(name string, state int, createdBy string) bool {
 }
 
 func (tag *Tag) BeforeCreate(scope gorm.Scope) error {
-	scope.SetColumn("CreateOn", time.Now().Unix())
+	scope.SetColumn("created_at", time.Now().Unix())
 	return nil
 }
 func (tag *Tag) BeforeUpdate(scope gorm.Scope) error {
-	scope.SetColumn("ModifiedOn", time.Now().Unix())
+	scope.SetColumn("modified_at", time.Now().Unix())
 	return nil
 }

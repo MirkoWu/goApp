@@ -14,7 +14,9 @@ func JWT() gin.HandlerFunc {
 		var data interface{}
 
 		code = e.SUCCESS
-		token := c.Query("token")
+		token := c.GetHeader("token")
+		//token := c.Query("token")
+
 		if token == "" {
 			code = e.INVALID_PARAMS
 		} else {
@@ -23,6 +25,13 @@ func JWT() gin.HandlerFunc {
 				code = e.ERROR_AUTH_CHECK_TOKEN_FAIL
 			} else if time.Now().Unix() > claims.ExpiresAt {
 				code = e.ERROR_AUTH_CHECK_TOKEN_TIMEOUT
+			} else {
+				if claims.UserId > 0 {
+					//解析 user_id  接口直接用，客户端只需传token就好了
+					c.Set("user_id", claims.UserId)
+				} else {
+					code = e.ERROR_NOT_EXIST_USER
+				}
 			}
 		}
 
@@ -35,6 +44,10 @@ func JWT() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
+
+		// 继续交由下一个路由处理
 		c.Next()
+		//并将解析出的信息传递下去
+		//c.Set("user_id",1)
 	}
 }

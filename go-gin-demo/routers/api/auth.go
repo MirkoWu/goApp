@@ -1,12 +1,11 @@
 package api
 
 import (
-	"github.com/astaxie/beego/validation"
 	"github.com/gin-gonic/gin"
 	"github.com/mirkowu/go-gin-demo/models"
 	"github.com/mirkowu/go-gin-demo/pkg/e"
-	"github.com/mirkowu/go-gin-demo/pkg/logging"
 	"github.com/mirkowu/go-gin-demo/pkg/util"
+	"github.com/unknwon/com"
 	"net/http"
 )
 
@@ -16,19 +15,13 @@ type auth struct {
 }
 
 func GetAuth(c *gin.Context) {
-	username := c.Query("username")
-	password := c.Query("password")
-
-	valid := validation.Validation{}
-	a := auth{Username: username, Password: password}
-	ok, _ := valid.Valid(&a)
-
+	userId := com.StrTo(c.DefaultQuery("user_id", "0")).MustInt()
 	data := make(map[string]interface{})
 	code := e.INVALID_PARAMS
-	if ok {
-		isExist := models.CheckAuth(username, password)
+	if userId > 0 {
+		isExist := models.CheckAuth(userId)
 		if isExist {
-			token, err := util.GenerateToken(username, password)
+			token, err := util.GenerateToken(userId)
 			if err != nil {
 				code = e.ERROR_AUTH_TOKEN
 			} else {
@@ -39,10 +32,6 @@ func GetAuth(c *gin.Context) {
 
 		} else {
 			code = e.ERROR_AUTH
-		}
-	} else {
-		for _, err := range valid.Errors {
-			logging.Info(err.Key, err.Message)
 		}
 	}
 

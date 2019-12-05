@@ -5,11 +5,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/mirkowu/go-gin-demo/pkg/e"
 	"github.com/mirkowu/go-gin-demo/pkg/logging"
+	"github.com/mirkowu/go-gin-demo/pkg/util"
 	"log"
 	"net/http"
 )
 
-const UPLOAD_FILE_PATH = "static/uploadfile/"
+const UPLOAD_FILE_PATH = "static/upload_file/"
 
 /**上传方法**/
 func UploadFile(c *gin.Context) (code int, data []string, context *gin.Context) {
@@ -28,14 +29,17 @@ func UploadFile(c *gin.Context) (code int, data []string, context *gin.Context) 
 	filename := header.Filename
 	fmt.Println(file, err, filename)
 
-	//放到static/uploadfile/ 文件夹下
-	filename = UPLOAD_FILE_PATH + filename
+	//放到static/upload_file/ 文件夹下
+	util.OpenFile(UPLOAD_FILE_PATH, filename)
+	filePath := UPLOAD_FILE_PATH + filename
+	fmt.Println("filePath=" + filePath)
+
 	//var data []string
-	if c.SaveUploadedFile(header, filename) != nil {
+	if err := c.SaveUploadedFile(header, filePath); err != nil {
 		logging.Fatal(err)
 	} else {
 		code = e.SUCCESS
-		data = append(data, filename)
+		data = append(data, filePath)
 	}
 
 	return code, data, c
@@ -60,14 +64,21 @@ func UploadFiles(c *gin.Context) {
 		return
 	}
 
-	files := form.File["upload[]"]
+	files := form.File["file"]
 	var data []string
 	for _, file := range files {
 		log.Println(file.Filename)
-		//放到static/uploadfile/ 文件夹下
-		filename := UPLOAD_FILE_PATH + file.Filename
-		data = append(data, filename)
-		c.SaveUploadedFile(file, filename)
+		filename := file.Filename
+		//放到static/upload_file/ 文件夹下
+		util.OpenFile(UPLOAD_FILE_PATH, filename)
+		filePath := UPLOAD_FILE_PATH + filename
+		fmt.Println("filePath=" + filePath)
+
+		c.SaveUploadedFile(file, filePath)
+		data = append(data, filePath)
+	}
+	if len(files) != 0 && len(data) == len(files) {
+		code = e.SUCCESS
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"code": code,

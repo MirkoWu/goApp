@@ -1,32 +1,40 @@
 package models
 
 import (
-	"fmt"
+	"github.com/jinzhu/gorm"
+	"github.com/mirkowu/go-gin-demo/pkg/logging"
 	"time"
 )
 
 type User struct {
-	UserId        int64  `json:"user_id"`
+	Model
+	UserId        int    `json:"user_id"`
 	Email         string `json:"email"`
-	Password      string `json:"password"`
+	Password      string `json:"-"`
 	Nickname      string `json:"nickname"`
 	Avatar        string `json:"avatar"`
-	Age           int    `json:"age"`
+	Sex           int    `json:"sex"`
 	Signature     string `json:"signature"`
 	RegisterTime  int64  `json:"register_time"`
 	LastLoginTime int64  `json:"last_login_time"`
+	Token         string `json:"token"`
 }
 
-func GetUserByID(userId int64) (user User) {
-	db.Select("user").Where("user_id = ?", userId).First(&user)
+func GetUserByID(userId int) (user User) {
+	db.Where("user_id = ?", userId).First(&user)
 	return
 }
 
 func GetUserByEmail(email string) (user User) {
 	db.Where("email = ?", email).First(&user)
-	fmt.Println(user.Password)
 	return
 }
+
+//func GetUserWithPwdByEmail(email string) (user User) {
+//	db.Where("email = ?", email).First(&user)
+//	fmt.Println(user.Password)
+//	return
+//}
 
 func GetUserTotal() (count int) {
 	db.Model(&User{}).Count(&count)
@@ -42,14 +50,30 @@ func ExistUserByEmail(email string) bool {
 
 	return false
 }
-func ExistUserByID(userId int64) bool {
-	var user User
-	db.Select("user").Where("id = ?", userId).First(&user)
-	if user.UserId > 0 {
-		return true
+
+//func ExistUserByID(userId int) (isExist bool) {
+//	if userId <= 0 {
+//		return false
+//	}
+//var user User
+//	db.Where("user_id = ?", userId).First(&user)
+//	if user.UserId > 0 {
+//		return true
+//	}
+//
+//	return false
+//}
+func ExistUserByID(userId int) (isExist bool, user User) {
+	if userId <= 0 {
+		return false, user
 	}
 
-	return false
+	db.Where("user_id = ?", userId).First(&user)
+	if user.UserId > 0 {
+		return true, user
+	}
+
+	return false, user
 }
 
 //func DeleteUser(id int  ) bool {
@@ -58,25 +82,53 @@ func ExistUserByID(userId int64) bool {
 //	return true
 //}
 
-func EditUser(id int64, data interface{}) bool {
-	db.Model(&User{}).Where("id = ?", id).Update(data)
+func UpdateUser(id int, data interface{}) bool {
+	db.Model(&User{}).Where("user_id = ?", id).Update(data)
 
 	return true
 }
 
-func AddUser(email string, password string) bool {
+/**
+获取最新的用户id
+*/
+func GetNewUserId() int {
+	var user User
+	db.Select("user_id").Last(&user)
+	return user.UserId + 1
+}
+
+//添加用户
+func AddUser(email, password string) bool {
 	//TimeFormat := "20060102 12:12:12"
-	db.Create(&User{
-		UserId:        1,
+
+	var newId = GetNewUserId()
+
+	err := db.Create(&User{
+		UserId:        newId,
 		Email:         email,
 		Password:      password,
 		Nickname:      "昵称",
 		Avatar:        "s",
-		Age:           -1,
+		Sex:           0,
 		Signature:     "...",
 		RegisterTime:  time.Now().Unix(),
 		LastLoginTime: time.Now().Unix(),
-	})
-
+	}).Error
+	if err != nil {
+		logging.Error(err)
+	}
 	return true
+}
+
+func (user *User) BeforeCreate(scope *gorm.Scope) error {
+	if scope.HasColumn("created_at") {
+		scope.SetColumn("created_at", time.Now().Unix())
+	}
+	return nil
+}
+func (user *User) BeforeUpdate(scope *gorm.Scope) error {
+	if scope.HasColumn("updated_at") {
+		scope.SetColumn("updated_at", time.Now().Unix())
+	}
+	return nil
 }

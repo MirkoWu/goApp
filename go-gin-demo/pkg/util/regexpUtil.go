@@ -9,8 +9,6 @@ const (
 	REG_PASSWORD string = "^[a-z0-9_-]{6,18}$"
 )
 
-var Reg_password = regexp.MustCompile(REG_PASSWORD)
-
 //检测邮箱密码是否非法
 func CheckEmail(email string) bool {
 	valid := validation.Validation{}
@@ -23,7 +21,7 @@ func CheckEmail(email string) bool {
 func CheckPwd(password string) bool {
 	valid := validation.Validation{}
 	valid.Required(password, "password").Message("密码不能为空")
-	valid.Match(password, Reg_password, "password").Message("密码不合法")
+	valid.Match(password, regexp.MustCompile(REG_PASSWORD), "password").Message("密码不合法")
 	return !valid.HasErrors()
 }
 

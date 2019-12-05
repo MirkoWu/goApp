@@ -11,9 +11,28 @@ import (
 	"regexp"
 )
 
+//登录
+func GetUserInfo(c *gin.Context) {
+	//userId := com.StrTo(c.DefaultQuery("user_id", "0")).MustInt()
+	userId := c.GetInt("user_id") //token中取
+
+	var data interface{}
+	code := e.ERROR_NOT_EXIST_USER
+	if isExist, user := models.ExistUserByID(userId); isExist {
+		data = user
+		code = e.SUCCESS
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"code": code,
+		"msg":  e.GetMsg(code),
+		"data": data,
+	})
+}
+
 //修改密码
 func UpdatePassword(c *gin.Context) {
-	userId := com.StrTo(c.DefaultQuery("user_id", "0")).MustInt64()
+	userId := c.GetInt("user_id") //token中取
 	oldPassword := c.Query("old_password")
 	newPassword := c.Query("new_password")
 
@@ -26,11 +45,11 @@ func UpdatePassword(c *gin.Context) {
 	code := e.ERROR_EMAIL_PASSWORD
 	if !valid.HasErrors() {
 		if oldPassword == newPassword {
-			if models.ExistUserByID(userId) {
-				user := models.GetUserByID(userId)
+			if isExist, user := models.ExistUserByID(userId); isExist {
+
 				if oldPassword == user.Password {
 					user.Password = newPassword
-					models.EditUser(userId, user)
+					models.UpdateUser(userId, user)
 					//修改成功 之后一般还会重置下token
 					code = e.SUCCESS
 				} else {
@@ -52,24 +71,24 @@ func UpdatePassword(c *gin.Context) {
 
 //修改密码
 func UpdateUserInfo(c *gin.Context) {
-	userId := com.StrTo(c.DefaultQuery("user_id", "0")).MustInt64()
+	userId := c.GetInt("user_id") //token中取
 	nickname := c.Query("nickname")
-	ageStr := c.Query("age")
+	sexStr := c.Query("sex")
 	signature := c.Query("signature")
 
 	code := e.SUCCESS
-	if models.ExistUserByID(userId) {
-		user := models.GetUserByID(userId)
+	if isExist, user := models.ExistUserByID(userId); isExist {
+
 		if nickname != "" {
 			user.Nickname = nickname
 		}
 		if signature != "" {
 			user.Signature = signature
 		}
-		if ageStr != "" {
-			user.Age = com.StrTo(ageStr).MustInt()
+		if sexStr != "" {
+			user.Sex = com.StrTo(sexStr).MustInt()
 		}
-		models.EditUser(userId, user)
+		models.UpdateUser(userId, user)
 		code = e.SUCCESS
 	} else {
 		code = e.ERROR_NOT_EXIST_USER
@@ -84,16 +103,15 @@ func UpdateUserInfo(c *gin.Context) {
 
 //更新头像
 func UpdateAvatar(c *gin.Context) {
-	userId := com.StrTo(c.DefaultQuery("user_id", "0")).MustInt64()
+	userId := c.GetInt("user_id") //token中取
 
 	code := e.SUCCESS
-	if models.ExistUserByID(userId) {
-		user := models.GetUserByID(userId)
+	if isExist, user := models.ExistUserByID(userId); isExist {
 		code2, data, _ := UploadFile(c)
 		code = code2
 		if code == e.SUCCESS {
 			user.Avatar = data[0]
-			models.EditUser(userId, user)
+			models.UpdateUser(userId, user)
 		}
 	} else {
 		code = e.ERROR_NOT_EXIST_USER
