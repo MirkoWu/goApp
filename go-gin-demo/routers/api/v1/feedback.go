@@ -4,14 +4,14 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/mirkowu/go-gin-demo/models"
 	"github.com/mirkowu/go-gin-demo/pkg/e"
+	"github.com/mirkowu/go-gin-demo/pkg/util"
 	"github.com/unknwon/com"
 	"net/http"
 )
 
 //添加
 func AddFeedback(c *gin.Context) {
-	//userId := com.StrTo(c.DefaultQuery("user_id", "0")).MustInt()
-	userId := c.GetInt("user_id") //token中取
+	userId := util.GetUserId(c)
 
 	var feedback models.Feedback
 	code := e.ERROR_NOT_EXIST_USER
@@ -36,19 +36,15 @@ func AddFeedback(c *gin.Context) {
 	})
 }
 
-//获取
+//查询所有
 func GetAllFeedback(c *gin.Context) {
-	//userId := com.StrTo(c.DefaultQuery("user_id", "0")).MustInt()
-	userId := c.GetInt("user_id") //token中取
-
-	page := com.StrTo(c.PostForm("page")).MustInt()
-	pageSize := com.StrTo(c.PostForm("pageSize")).MustInt()
+	userId := util.GetUserId(c)
+	pageSize, offset := util.GetPageByPost(c)
 
 	var list []models.Feedback
-
 	code := e.ERROR_NOT_EXIST_USER
 	if isExist, _ := models.ExistUserByID(userId); isExist {
-		list, _ = models.GetAllFeedback(page, pageSize)
+		list, _ = models.GetAllFeedback(pageSize, offset)
 		code = e.SUCCESS
 	}
 
@@ -59,10 +55,9 @@ func GetAllFeedback(c *gin.Context) {
 	})
 }
 
-//获取
+//更新
 func UpdateFeedback(c *gin.Context) {
-	//userId := com.StrTo(c.DefaultQuery("user_id", "0")).MustInt()
-	userId := c.GetInt("user_id") //token中取
+	userId := util.GetUserId(c)
 
 	id := com.StrTo(c.PostForm("id")).MustInt()
 	title := c.PostForm("title")
@@ -70,7 +65,6 @@ func UpdateFeedback(c *gin.Context) {
 	contact := c.PostForm("contact")
 
 	var list []models.Feedback
-
 	code := e.ERROR_NOT_EXIST_USER
 	if isExist, _ := models.ExistUserByID(userId); isExist {
 		if isExist, feedback := models.ExistFeedbackByID(id); isExist {
@@ -95,5 +89,27 @@ func UpdateFeedback(c *gin.Context) {
 		"code": code,
 		"msg":  e.GetMsg(code),
 		"data": list,
+	})
+}
+
+//删除反馈
+func DeleteFeedback(c *gin.Context) {
+	userId := util.GetUserId(c)
+	id := com.StrTo(c.PostForm("id")).MustInt()
+
+	code := e.ERROR_NOT_EXIST_USER
+	if isExist, _ := models.ExistUserByID(userId); isExist {
+		if isExist, _ := models.ExistFeedbackByID(id); isExist {
+			models.DeleteFeedback(id)
+			code = e.SUCCESS
+		} else {
+			code = e.ERROR_NOT_EXIST
+		}
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"code": code,
+		"msg":  e.GetMsg(code),
+		"data": nil,
 	})
 }

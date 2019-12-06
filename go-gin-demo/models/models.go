@@ -6,14 +6,16 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/mirkowu/go-gin-demo/pkg/logging"
 	"github.com/mirkowu/go-gin-demo/pkg/setting"
+	"time"
 )
 
 var db *gorm.DB
 
 type Model struct {
-	ID        int   `sql:"auto_increment;primary_key;unique" json:"-"`
-	CreatedAt int64 `json:"created_at"`
-	UpdatedAt int64 `json:"updated_at"`
+	ID        int       `sql:"auto_increment;primary_key;unique" json:"-"`
+	CreatedAt time.Time `json:"-"`
+	UpdatedAt time.Time `json:"-"`
+	DeletedAt time.Time `gorm:"default:''" json:"-" ` //设置默认为空 不然000无法提交 数据库那里为NULL就行了
 }
 
 //请在包的引号前加一个 "_" ，以表示自动调用相关包内的init方法(因为在main中使用过，故也会自动调用包内的init方法
@@ -30,6 +32,7 @@ func init() {
 	host = setting.DB_HOST
 	tablePrefix = setting.DB_TABLE_PREFIX
 
+	//注意： 为了正确的处理 time.Time ，你需要包含 parseTime 作为参数。
 	db, err = gorm.Open(dbType, fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local",
 		user,
 		password,

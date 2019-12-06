@@ -17,7 +17,7 @@ const (
 
 //获取验证码
 func GetCaptcha(c *gin.Context) {
-	email := c.Query("email")
+	email := c.PostForm("email")
 	captchaType := com.StrTo(c.DefaultQuery("type", "0")).MustInt()
 
 	var data string
@@ -51,8 +51,8 @@ func GetCaptcha(c *gin.Context) {
 
 //注册
 func Register(c *gin.Context) {
-	email := c.Query("email")
-	password := c.Query("password")
+	email := c.PostForm("email")
+	password := c.PostForm("password")
 
 	var data interface{}
 	code := e.ERROR_EMAIL_PASSWORD
@@ -61,8 +61,8 @@ func Register(c *gin.Context) {
 			code = e.ERROR_EXIST_EMAIL
 		} else {
 			models.AddUser(email, password)
-
 			user := models.GetUserByEmail(email)
+
 			user.Token, _ = util.GenerateToken(user.UserId) //token
 			models.UpdateUser(user.UserId, user)            //更新
 
@@ -80,8 +80,8 @@ func Register(c *gin.Context) {
 
 //登录
 func Login(c *gin.Context) {
-	email := c.Query("email")
-	password := c.Query("password")
+	email := c.PostForm("email")
+	password := c.PostForm("password")
 
 	var data interface{}
 	code := e.ERROR_EMAIL_PASSWORD
@@ -89,7 +89,7 @@ func Login(c *gin.Context) {
 		if models.ExistUserByEmail(email) {
 			user := models.GetUserByEmail(email)
 			if password == user.Password {
-				user.LastLoginTime = time.Now().Unix()
+				user.LastLoginTime = time.Now().Unix()          //登录时间
 				user.Token, _ = util.GenerateToken(user.UserId) //token
 				models.UpdateUser(user.UserId, user)            //更新
 

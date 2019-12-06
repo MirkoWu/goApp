@@ -18,11 +18,7 @@ func UploadFile(c *gin.Context) (code int, data []string, context *gin.Context) 
 	file, header, err := c.Request.FormFile("file") //image这个是uplaodify参数定义中的   'fileObjName':'image'
 	code = e.ERROR_UPLOAD_FILE
 	if err != nil {
-		//c.JSON(http.StatusOK, gin.H{
-		//	"code": code,
-		//	"msg":  e.GetMsg(code),
-		//	"data": nil,
-		//})
+		logging.Error(err)
 		return code, data, c
 	}
 	//文件的名称
@@ -36,7 +32,7 @@ func UploadFile(c *gin.Context) (code int, data []string, context *gin.Context) 
 
 	//var data []string
 	if err := c.SaveUploadedFile(header, filePath); err != nil {
-		logging.Fatal(err)
+		logging.Error(err)
 	} else {
 		code = e.SUCCESS
 		data = append(data, filePath)
@@ -56,6 +52,7 @@ func UploadFiles(c *gin.Context) {
 	form, err := c.MultipartForm()
 	code := e.ERROR_UPLOAD_FILE
 	if err != nil {
+		logging.Error(err)
 		c.JSON(http.StatusOK, gin.H{
 			"code": code,
 			"msg":  e.GetMsg(code),

@@ -33,14 +33,6 @@ func InitRouter() *gin.Engine {
 		//登录
 		loginApi.POST("/login", v1.Login)
 
-		//获取用户信息
-		loginApi.POST("/get_user_info", v1.GetUserInfo)
-		//更新头像
-		loginApi.POST("/update_avatar", v1.UpdateAvatar)
-
-		//上传多张图片
-		loginApi.POST("/upload_files", v1.UploadFiles)
-
 	}
 
 	apiv1 := r.Group("/api/v1")
@@ -57,8 +49,13 @@ func InitRouter() *gin.Engine {
 
 		//上传多张图片
 		apiv1.POST("/upload_files", v1.UploadFiles)
+
+		//获取用户列表
+		apiv1.POST("/get_user_list", v1.GetAllUser)
 		//获取用户信息
 		apiv1.POST("/get_user_info", v1.GetUserInfo)
+		//获取指定用户信息
+		apiv1.POST("/get_user_info_by_id", v1.GetUserInfoByID)
 		//更新密码
 		apiv1.POST("/update_password", v1.UpdatePassword)
 		//更新用户信息
@@ -72,8 +69,17 @@ func InitRouter() *gin.Engine {
 		apiv1.POST("/get_feedback_list", v1.GetAllFeedback)
 		//更新反馈
 		apiv1.POST("/update_feedback", v1.UpdateFeedback)
+		//删除反馈
+		apiv1.POST("/delete_feedback", v1.DeleteFeedback)
+
+		//添加tab
+		apiv1.POST("/add_app_tab", v1.AddAppTab)
+		//tab列表
+		apiv1.POST("/get_app_tab_list", v1.GetAllShowAppTab)
 
 	}
+
+	//admin
 
 	return r
 }

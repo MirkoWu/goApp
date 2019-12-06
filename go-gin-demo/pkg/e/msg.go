@@ -19,6 +19,7 @@ var MsgFlags = map[int]string{
 	ERROR_OLD_PASSWORD:              "旧密码错误",
 	ERROR_NOT_SAME_OLD_NEW_PASSWORD: "旧密码和新密码不一致",
 	ERROR_NOT_EXIST_USER:            "用户不存在",
+	ERROR_NOT_EXIST_USER_BY_QUREY:   "查询的用户不存在",
 
 	ERROR_UPLOAD_FILE:   "上传失败",
 	ERROR_FILE_OUT_SIZE: "图片过大",
