@@ -18,4 +18,3 @@ CREATE TABLE `test`.`user` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户表';
 
-INSERT INTO `test`.`user` (`email`, `password` ) VALUES ( '123@qq.com', 'test123456');
