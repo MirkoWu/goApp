@@ -1,14 +1,11 @@
 package v1
 
 import (
-	"github.com/astaxie/beego/validation"
 	"github.com/gin-gonic/gin"
 	"github.com/mirkowu/go-gin-demo/models"
 	"github.com/mirkowu/go-gin-demo/pkg/e"
 	"github.com/mirkowu/go-gin-demo/pkg/util"
 	"github.com/unknwon/com"
-	"net/http"
-	"regexp"
 )
 
 //登录
@@ -22,11 +19,7 @@ func GetUserInfo(c *gin.Context) {
 		code = e.SUCCESS
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"code": code,
-		"msg":  e.GetMsg(code),
-		"data": data,
-	})
+	util.GinJson(c, code, data)
 }
 
 //查询指定用户
@@ -46,11 +39,7 @@ func GetUserInfoByID(c *gin.Context) {
 		}
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"code": code,
-		"msg":  e.GetMsg(code),
-		"data": data,
-	})
+	util.GinJson(c, code, data)
 }
 
 //获取所有用户
@@ -65,11 +54,7 @@ func GetAllUser(c *gin.Context) {
 		code = e.SUCCESS
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"code": code,
-		"msg":  e.GetMsg(code),
-		"data": data,
-	})
+	util.GinJson(c, code, data)
 }
 
 //修改密码
@@ -78,14 +63,8 @@ func UpdatePassword(c *gin.Context) {
 	oldPassword := c.PostForm("old_password")
 	newPassword := c.PostForm("new_password")
 
-	valid := validation.Validation{}
-	valid.Required(oldPassword, "password").Message("旧密码不能为空")
-	valid.Match(oldPassword, regexp.MustCompile(util.REG_PASSWORD), "password").Message("旧密码不合法")
-	valid.Required(newPassword, "password").Message("新密码不能为空")
-	valid.Match(newPassword, regexp.MustCompile(util.REG_PASSWORD), "password").Message("新密码不合法")
-
 	code := e.ERROR_EMAIL_PASSWORD
-	if !valid.HasErrors() {
+	if msg := util.CheckUpdatePwd(oldPassword, newPassword); msg == "" {
 		if oldPassword == newPassword {
 			if isExist, user := models.ExistUserByID(userId); isExist {
 
@@ -103,12 +82,10 @@ func UpdatePassword(c *gin.Context) {
 		} else {
 			code = e.ERROR_NOT_SAME_OLD_NEW_PASSWORD
 		}
+		util.GinJson(c, code, nil)
+	} else {
+		util.GinJsonMsg(c, code, msg, nil)
 	}
-	c.JSON(http.StatusOK, gin.H{
-		"code": code,
-		"msg":  e.GetMsg(code),
-		"data": nil,
-	})
 }
 
 //修改密码
@@ -136,11 +113,8 @@ func UpdateUserInfo(c *gin.Context) {
 		code = e.ERROR_NOT_EXIST_USER
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"code": code,
-		"msg":  e.GetMsg(code),
-		"data": nil,
-	})
+	util.GinJson(c, code, nil)
+
 }
 
 //更新头像
@@ -159,9 +133,5 @@ func UpdateAvatar(c *gin.Context) {
 		code = e.ERROR_NOT_EXIST_USER
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"code": code,
-		"msg":  e.GetMsg(code),
-		"data": nil,
-	})
+	util.GinJson(c, code, nil)
 }

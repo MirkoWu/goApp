@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/mirkowu/go-gin-demo/pkg/logging"
+	"sync"
 )
 
 type AppTab struct {
@@ -12,6 +13,8 @@ type AppTab struct {
 	Type   int    `form:"type"  json:"type"`
 	IsShow int    `form:"is_show" json:"-"`
 }
+
+var lock3 sync.Mutex
 
 //获取的id
 func GetNewTabId() int {
@@ -24,8 +27,11 @@ func GetNewTabId() int {
 
 //添加
 func AddAppTab(data AppTab) {
+	lock3.Lock()
 	data.TabId = GetNewTabId() //更新id
 	err := db.Create(&data).Error
+	lock3.Unlock()
+
 	if err != nil {
 		logging.Error(err)
 	}

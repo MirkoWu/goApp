@@ -13,4 +13,3 @@ CREATE TABLE `test`.`feedback` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='反馈表';
 
-INSERT INTO `test`.`feedback` (`user_id`, `title`, `content` ) VALUES ( '123', 'title', 'content');

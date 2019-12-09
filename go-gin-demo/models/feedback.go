@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/mirkowu/go-gin-demo/pkg/logging"
+	"sync"
 	"time"
 )
 
@@ -16,6 +17,8 @@ type Feedback struct {
 	SubmitTime int64  `json:"submit_time"`
 }
 
+var lock2 sync.Mutex
+
 //获取的id
 func GetNewFeedbackId() int {
 	var data Feedback
@@ -27,9 +30,12 @@ func GetNewFeedbackId() int {
 
 //添加反馈
 func AddFeedback(data Feedback) {
+	lock2.Lock()
 	data.FeedbackId = GetNewFeedbackId() //更新id
 	data.SubmitTime = time.Now().Unix()
 	err := db.Create(&data).Error
+	lock2.Unlock()
+
 	if err != nil {
 		logging.Error(err)
 	}

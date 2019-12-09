@@ -6,7 +6,6 @@ import (
 	"github.com/mirkowu/go-gin-demo/pkg/e"
 	"github.com/mirkowu/go-gin-demo/pkg/util"
 	"github.com/unknwon/com"
-	"net/http"
 )
 
 //添加
@@ -29,11 +28,7 @@ func AddFeedback(c *gin.Context) {
 		}
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"code": code,
-		"msg":  e.GetMsg(code),
-		"data": nil,
-	})
+	util.GinJson(c, code, nil)
 }
 
 //查询所有
@@ -48,11 +43,7 @@ func GetAllFeedback(c *gin.Context) {
 		code = e.SUCCESS
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"code": code,
-		"msg":  e.GetMsg(code),
-		"data": list,
-	})
+	util.GinJson(c, code, list)
 }
 
 //更新
@@ -85,11 +76,7 @@ func UpdateFeedback(c *gin.Context) {
 		}
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"code": code,
-		"msg":  e.GetMsg(code),
-		"data": list,
-	})
+	util.GinJson(c, code, list)
 }
 
 //删除反馈
@@ -107,9 +94,6 @@ func DeleteFeedback(c *gin.Context) {
 		}
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"code": code,
-		"msg":  e.GetMsg(code),
-		"data": nil,
-	})
+	util.GinJson(c, code, nil)
+
 }

@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/mirkowu/go-gin-demo/pkg/logging"
+	"sync"
 	"time"
 )
 
@@ -28,6 +29,8 @@ type User struct {
 	Token         string `json:"token"`
 }
 
+var lock sync.Mutex
+
 /**
 获取最新的用户id
 */
@@ -41,11 +44,10 @@ func GetNewUserId() int {
 
 //添加用户
 func AddUser(email, password string) bool {
-	//TimeFormat := "20060102 12:12:12"
-
+	//这里操作要保证id线程安全
+	lock.Lock()
 	var newId = GetNewUserId()
-
-	if err := db.Create(&User{
+	err := db.Create(&User{
 		UserId:        newId,
 		Email:         email,
 		Password:      password,
@@ -55,10 +57,12 @@ func AddUser(email, password string) bool {
 		Signature:     "",
 		RegisterTime:  time.Now().Unix(),
 		LastLoginTime: time.Now().Unix(),
-	}).Error; err != nil {
+	}).Error
+	lock.Unlock()
+
+	if err != nil {
 		logging.Error(err)
 	}
-
 	return true
 }
 
@@ -85,7 +89,10 @@ func GetUserTotal() (count int) {
 func ExistUserByEmail(email string) bool {
 	var user User
 	if err := db.Where("email = ?", email).First(&user).Error; err != nil {
-		logging.Error(err)
+		if err.Error() != "record not found" { //record not found 没查到说明不存在
+			logging.Error(err)
+		}
+		return false
 	}
 	if user.UserId > 0 {
 		return true

@@ -6,7 +6,6 @@ import (
 	"github.com/mirkowu/go-gin-demo/pkg/e"
 	"github.com/mirkowu/go-gin-demo/pkg/util"
 	"github.com/unknwon/com"
-	"net/http"
 	"time"
 )
 
@@ -22,7 +21,7 @@ func GetCaptcha(c *gin.Context) {
 
 	var data string
 	code := e.ERROR_EMAIL
-	if util.CheckEmail(email) {
+	if msg := util.CheckEmail(email); msg == "" {
 		if captchaType == TypeCaptchaRegister {
 			if models.ExistUserByEmail(email) {
 				code = e.ERROR_EXIST_EMAIL
@@ -40,13 +39,12 @@ func GetCaptcha(c *gin.Context) {
 		} else {
 			code = e.INVALID_PARAMS
 		}
+
+		util.GinJson(c, code, data)
+	} else {
+		util.GinJsonMsg(c, code, msg, data)
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"code": code,
-		"msg":  e.GetMsg(code),
-		"data": data,
-	})
 }
 
 //注册
@@ -56,7 +54,7 @@ func Register(c *gin.Context) {
 
 	var data interface{}
 	code := e.ERROR_EMAIL_PASSWORD
-	if util.CheckEmailAndPwd(email, password) {
+	if msg := util.CheckEmailAndPwd(email, password); msg == "" {
 		if models.ExistUserByEmail(email) {
 			code = e.ERROR_EXIST_EMAIL
 		} else {
@@ -69,13 +67,11 @@ func Register(c *gin.Context) {
 			data = user
 			code = e.SUCCESS
 		}
+		util.GinJson(c, code, data)
+	} else {
+		util.GinJsonMsg(c, code, msg, data)
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"code": code,
-		"msg":  e.GetMsg(code),
-		"data": data,
-	})
 }
 
 //登录
@@ -85,7 +81,7 @@ func Login(c *gin.Context) {
 
 	var data interface{}
 	code := e.ERROR_EMAIL_PASSWORD
-	if util.CheckEmailAndPwd(email, password) {
+	if msg := util.CheckEmailAndPwd(email, password); msg == "" {
 		if models.ExistUserByEmail(email) {
 			user := models.GetUserByEmail(email)
 			if password == user.Password {
@@ -101,10 +97,9 @@ func Login(c *gin.Context) {
 		} else {
 			code = e.ERROR_NOT_EXIST_EMAIL
 		}
+		util.GinJson(c, code, data)
+	} else {
+		util.GinJsonMsg(c, code, msg, data)
 	}
-	c.JSON(http.StatusOK, gin.H{
-		"code": code,
-		"msg":  e.GetMsg(code),
-		"data": data,
-	})
+
 }

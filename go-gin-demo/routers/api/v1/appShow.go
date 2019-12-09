@@ -8,28 +8,30 @@ import (
 )
 
 //添加
-func AddAppTab(c *gin.Context) {
+func AddAppShow(c *gin.Context) {
 	//userId := util.GetUserId(c)
 
-	var data models.AppTab
+	var data models.AppShow
 	code := e.ERROR_NOT_EXIST_USER
 	if err := c.ShouldBind(&data); err != nil {
 		code = e.ERROR
 	} else {
-		if data.Title == "" || data.Type == 0 {
-			code = e.ERROR_NOT_EMPTY
-		} else {
+		if msg := util.CheckAppInfo(data); msg == "" {
 			//	if isExist, _ := models.ExistUserByID(userId); isExist {
-			models.AddAppTab(data)
+			models.AddAppShow(data)
 			code = e.SUCCESS
 			//	}
+		} else {
+			code = e.INVALID_PARAMS
+			util.GinJsonMsg(c, code, msg, nil)
+			return
 		}
 	}
 
 	util.GinJson(c, code, nil)
 }
 
-//////查询所有
+////查询所有
 //func GetAllAppTab(c *gin.Context) {
 //	//userId := util.GetUserId(c)
 //	//pageSize, offset := util.GetPageByPost(c)
@@ -48,14 +50,14 @@ func AddAppTab(c *gin.Context) {
 //	})
 //}
 //查询所有显示的列表
-func GetAllShowAppTab(c *gin.Context) {
+func GetAllShowAppList(c *gin.Context) {
 	//userId := util.GetUserId(c)
-	//pageSize, offset := util.GetPageByPost(c)
+	pageSize, offset := util.GetPageByPost(c)
 
-	var list []models.AppTab
+	var list []models.AppShow
 	code := e.ERROR_NOT_EXIST_USER
 	//if isExist, _ := models.ExistUserByID(userId); isExist {
-	list, _ = models.GetAllShowAppTab()
+	list, _ = models.GetAllShowAppList(pageSize, offset)
 	code = e.SUCCESS
 	//}
 

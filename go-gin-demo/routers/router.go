@@ -77,6 +77,11 @@ func InitRouter() *gin.Engine {
 		//tab列表
 		apiv1.POST("/get_app_tab_list", v1.GetAllShowAppTab)
 
+		//添加app
+		apiv1.POST("/add_app_show", v1.AddAppShow)
+		//app列表
+		apiv1.POST("/get_app_show_list", v1.GetAllShowAppList)
+
 	}
 
 	//admin
