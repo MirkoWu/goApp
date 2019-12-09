@@ -139,7 +139,6 @@ func UpdateUser(id int, user User) bool {
 		logging.Error(err)
 		return false
 	}
-
 	return true
 }
 

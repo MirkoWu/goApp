@@ -22,16 +22,16 @@ func InitRouter() *gin.Engine {
 	//验证
 	//r.GET("/auth", api.GetAuth)
 
-	loginApi := r.Group("/api")
-	loginApi.Use()
+	noTokenApi := r.Group("/api/v1")
+	noTokenApi.Use()
 	{
 		//这些不需要token
 		//注册
-		loginApi.POST("/register", v1.Register)
+		noTokenApi.POST("/register", v1.Register)
 		//获取验证码
-		loginApi.POST("/get_captcha", v1.GetCaptcha)
+		noTokenApi.POST("/get_captcha", v1.GetCaptcha)
 		//登录
-		loginApi.POST("/login", v1.Login)
+		noTokenApi.POST("/login", v1.Login)
 
 	}
 

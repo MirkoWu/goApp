@@ -9,17 +9,18 @@ import (
 type AppShow struct {
 	Model
 
-	AppId          int    `form:"app_id" json:"app_id"`
-	Name           string `form:"name" json:"name"`
-	Intro          string `form:"intro" json:"intro"`
-	Screenshots    string `form:"screenshots" json:"screenshots"`
-	LinkUrl        string `form:"link_url" json:"link_url"`
-	ApkUrl         string `form:"apk_url" json:"apk_url"`
-	ApkSize        string `form:"apk_size" json:"apk_size"`
-	AppVersion     string `form:"app_version" json:"app_version"`
-	AppVersionCode int    `form:"app_version_code" json:"app_version_code"`
-	AppPn          string `form:"app_pn" json:"app_pn"` //包名
-	IsShow         int    `form:"is_show" json:"-"`     //是否显示
+	AppId          int      `form:"app_id" json:"app_id"`
+	Name           string   `form:"name" json:"name"`
+	Intro          string   `form:"intro" json:"intro"`
+	Screenshots    string   `form:"screenshots" json:"screenshots"`
+	CoverList      []string `form:"cover_list" json:"cover_list"` //仅用于返回
+	LinkUrl        string   `form:"link_url" json:"link_url"`
+	ApkUrl         string   `form:"apk_url" json:"apk_url"`
+	ApkSize        string   `form:"apk_size" json:"apk_size"`
+	AppVersion     string   `form:"app_version" json:"app_version"`
+	AppVersionCode int      `form:"app_version_code" json:"app_version_code"`
+	AppPn          string   `form:"app_pn" json:"app_pn"` //包名
+	IsShow         int      `form:"is_show" json:"-"`     //是否显示
 }
 
 var lock4 sync.Mutex

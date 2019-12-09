@@ -121,10 +121,10 @@ func UpdateUserInfo(c *gin.Context) {
 func UpdateAvatar(c *gin.Context) {
 	userId := c.GetInt("user_id") //token中取
 
+	var data []string
 	code := e.SUCCESS
 	if isExist, user := models.ExistUserByID(userId); isExist {
-		code2, data, _ := UploadFile(c)
-		code = code2
+		code, data, _ = UploadFile(c)
 		if code == e.SUCCESS {
 			user.Avatar = data[0]
 			models.UpdateUser(userId, user)
@@ -133,5 +133,5 @@ func UpdateAvatar(c *gin.Context) {
 		code = e.ERROR_NOT_EXIST_USER
 	}
 
-	util.GinJson(c, code, nil)
+	util.GinJson(c, code, data)
 }

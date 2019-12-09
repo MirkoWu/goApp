@@ -4,7 +4,7 @@ CREATE TABLE `test`.`user` (
   `email` varchar(45) NOT NULL  COMMENT '邮箱',
   `password` varchar(45) NOT NULL   COMMENT '密码',
   `nickname` varchar(45) DEFAULT '' COMMENT '昵称',
-  `avatar` varchar(45) DEFAULT '' COMMENT '头像',
+  `avatar` varchar(100) DEFAULT '' COMMENT '头像',
   `signature` varchar(100) DEFAULT '' COMMENT '个性签名',
   `sex` int unsigned DEFAULT 0 COMMENT '性别',
   `register_time` integer unsigned DEFAULT 0 COMMENT '注册时间',

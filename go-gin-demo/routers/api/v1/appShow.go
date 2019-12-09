@@ -58,6 +58,14 @@ func GetAllShowAppList(c *gin.Context) {
 	code := e.ERROR_NOT_EXIST_USER
 	//if isExist, _ := models.ExistUserByID(userId); isExist {
 	list, _ = models.GetAllShowAppList(pageSize, offset)
+
+	for i := 0; i < len(list); i++ {
+		data := list[i]
+		if data.Screenshots != "" /*&&data.Screenshots*/ {
+			//list[i].CoverList=data.Screenshots
+		}
+
+	}
 	code = e.SUCCESS
 	//}
 
